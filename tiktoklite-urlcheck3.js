@@ -47,7 +47,17 @@ exec(command, (error, stdout, stderr) => {
         const parts = line.split('=');
         const key = parts[0];
         const value = parts.slice(1).join('=');
-        console.log(`   ${C.yellow}${key}=${C.reset}${value}`);
+          // ★★★ 【追加部分】ここでURLエンコードを元に戻す ★★★
+        // TikTok Liteの2重エンコード対策として、一応2回デコードを通します
+        let decodedValue = value;
+        try {
+          decodedValue = decodeURIComponent(decodeURIComponent(rawValue));
+        } catch (e) {
+          // 万が一デコードでエラーが出た場合は、そのままの値を出す安全設計
+          try { decodedValue = decodeURIComponent(value); } catch(err) {}
+        }
+        // ★★★━━━━━━━━━━━━━━━━━━━━━━━━━━━━★★★
+        console.log(`   ${C.yellow}${key}=${C.reset}${decodedValue}`);
       } else {
         console.log(`   ${line}`);
       }
